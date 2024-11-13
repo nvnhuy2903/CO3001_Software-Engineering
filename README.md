@@ -5,7 +5,7 @@
 ## Team members
 
 | No. | Full name                 | Student ID |
-| --- | --------------------------| ---------- |
+| :-: | --------------------------| :--------: |
 | 1   | Nguyễn Trương Thái Bảo    | 2210251    |
 | 2   | Nguyễn Truyền Tuấn        | 2213795    |
 | 3   | Nguyễn Tuấn Huy           | 2211253    |
