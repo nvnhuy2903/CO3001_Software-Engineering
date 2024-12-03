@@ -16,6 +16,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.example.demo.models.Printer;
 import java.util.List;
+import java.util.Map;
+
 import com.example.demo.service.ExternalAPIService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,6 +56,13 @@ public class StudentController {
     public ApiResponse<Boolean> checkLogin(@RequestParam String username, @RequestParam String password){
         return ApiResponse.<Boolean>builder().
                             result(externalAPIService.checkLogin(username, password)).
+                            build();
+    }
+
+    @PostMapping("/get")
+    public ApiResponse<Map<String,Object>> get(@RequestParam String username, @RequestParam String password){
+        return ApiResponse.<Map<String,Object>>builder().
+                            result(externalAPIService.checkLogin2(username, password)).
                             build();
     }
 

@@ -28,7 +28,7 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS={"/spso/create", "/student/create", "/locations/create", "/printers/create/*", "/printingRequest/create/*/*",
             "/printingRequest/check", "/printingRequest/getNumberOfPages", 
             "/transactions/payment/*", "/transactions/recharge/*", 
-            "/student/checkLogin", "/auth/check", "/printers/addPages/*"
+            "/student/checkLogin", "/auth/check", "/printers/addPages/*","student/get"
         };
     private final String[] PUBLIC_GET_ENDPOINTS={ "/printers/*", "/locations/getAll", "/printers/checkAvailable/*"};
     @Value("${jwt.signerKey}")
