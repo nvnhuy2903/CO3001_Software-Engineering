@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: "jdbc:mysql://Localhost:3306/baby"
-    username: root
-    password: huy123456
+    url: "jdbc:mysql://nhathuy-mysql-server-cr10.mysql.database.azure.com/that"
+    username: nhathuy123
+    password: Toilaai123.
   jpa:
     hibernate: 
       ddl-auto: update
