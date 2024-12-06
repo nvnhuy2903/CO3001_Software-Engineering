@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class UserResponse {
+public class UserResponse {
     private Integer id;
-    private String fullname;
-    
 }

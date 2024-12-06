@@ -12,4 +12,5 @@ public class PrintingRequestCreation {
     private MultipartFile file;
     private String typePaper;
     private Integer copies;
+    private Integer somat;
 }

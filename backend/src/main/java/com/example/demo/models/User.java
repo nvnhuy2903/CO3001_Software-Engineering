@@ -24,13 +24,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 //@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer Id;
     private String name;
-    private String fullname;
     private String password;
     private String role;
 

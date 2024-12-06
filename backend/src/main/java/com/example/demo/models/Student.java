@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -25,10 +26,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Student extends User {
     // @Id
     // @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // private Integer Id;
-    // private String name;
-    // private String fullname;
-    // private String password;
+    private String mssv;
+    private String khoa;
+    private String nganh;
+    private String diachi;
+    private String fullname;
+    private String email;
     private Integer pages;
     @OneToOne(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Account account;
@@ -36,5 +39,4 @@ public class Student extends User {
     private List<PrintingRequest> printingRequests;
     @OneToOne(mappedBy="student")
     private PrintingLog printingLog;
-
 }

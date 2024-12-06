@@ -13,5 +13,6 @@ public class TransactionResponse {
     private Integer id;
     private Integer amount;
     private LocalDateTime date;
-    private Integer accountId;
+    private Integer pageRemain;
+    //private Integer accountId;
 }

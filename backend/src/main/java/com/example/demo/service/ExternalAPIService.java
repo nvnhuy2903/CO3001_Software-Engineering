@@ -103,16 +103,13 @@ public class ExternalAPIService {
     }
     private boolean fetchStudentInfo(Map<String, String> cookies) {
         try {
-            // Tạo yêu cầu GET đến trang thông tin sinh viên với token trong header
             Document studentInfoPage = Jsoup.connect("https://mybk.hcmut.edu.vn/app/he-thong-quan-ly/sinh-vien/thong-tin")
-                    .cookies(cookies) // Gửi cookies từ phiên đăng nhập
+                    .cookies(cookies) 
                     //.header("Authorization", "Bearer " + token) // Thêm token vào header
                     .userAgent("Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36 Edg/126.0.0.0")
                     .get();
 
-            // Lấy thông tin sinh viên từ tran
-            // In thông tin ra console
-            
+
             Element token = studentInfoPage.selectFirst("input[id=hid_Token]");
             String token1 = (token != null) ? token.attr("value") : "Không tìm thấy token";
             System.out.println(token1);
@@ -125,26 +122,24 @@ public class ExternalAPIService {
     }
     private boolean fetchInfo(Map<String, String> cookies, String token) {
         try {
-            // Tạo yêu cầu GET đến trang thông tin sinh viên với token trong header
+
             RestTemplate restTemplate = new RestTemplate();
 
-            // Tạo headers với token và Content-Type
+
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + token);
             headers.set("Content-Type", "application/json");
 
-            // Chuyển cookies vào headers
             for (Map.Entry<String, String> cookie : cookies.entrySet()) {
                 headers.add("Cookie", cookie.getKey() + "=" + cookie.getValue());
             }
 
-            // Tạo HttpEntity với headers
+
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            // Gửi yêu cầu GET tới API
             String url = "https://mybk.hcmut.edu.vn/api/v1/student/get-student-info?null";
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-            // In thông tin sinh viên (nội dung JSON)
+
             ObjectMapper objectMapper = new ObjectMapper();
             mp=objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
 
@@ -158,12 +153,10 @@ public class ExternalAPIService {
     }
     public Map<String,Object> checkLogin2(String user, String pass) {
         checkLogin(user, pass);
-        Map<String,Object> mp2=(Map<String, Object>)mp.get("data");
+        Map<String,Object> mp2=(Map<String,Object>)mp.get("data");
         System.out.println(mp2.get("code"));
         return mp2;
     }
-    
-
     
     
 }

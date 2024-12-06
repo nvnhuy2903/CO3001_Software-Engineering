@@ -31,8 +31,6 @@ public class Printer {
     private Integer pagesA4;
     private Integer pagesA3;    
     private Integer pagesA2;
-    private Integer pagesA1;
-    private Integer pagesA0;
     @ManyToOne
     @JoinColumn(name = "location_id")
     private Location location;

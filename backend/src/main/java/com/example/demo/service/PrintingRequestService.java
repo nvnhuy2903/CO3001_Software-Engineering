@@ -43,7 +43,7 @@ public class PrintingRequestService {
     private final PrinterRepository printerRepository;
     private final PrintingLogRepository printingLogRepository;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
+    private final TransactionService transactionService;
 
     public PrintingRequest createPrintingRequest(PrintingRequestCreation request, Integer id, Integer printerId){
         if(!checkPrintingRequest(request.getFile())){
@@ -61,6 +61,7 @@ public class PrintingRequestService {
             throw new AppException(ErrorCode.PRINTER_NOT_FOUND);
         }
         PrintingRequest printingRequest = new PrintingRequest();
+        printingRequest.setSomat(request.getSomat());
         printingRequest.setStudent(student);
         printingRequest.setTypePaper(request.getTypePaper());
         printingRequest.setPrinter(printer);
@@ -70,35 +71,15 @@ public class PrintingRequestService {
         printingRequest.setPages(getNumberOfPages(request.getFile()));
         log.info("pages: {}", printingRequest.getPages());
         printingRequest.setCopies(request.getCopies());
-        Integer pages = printingRequest.getPages()*printingRequest.getCopies();
+        
+        Integer result = printingRequest.getPages()*printingRequest.getCopies();
+        Integer pages=printingRequest.getSomat()==2?(int) Math.ceil((double)result / 2):result;
         // if(!checkPage(pages, id)){
         //     throw new AppException(ErrorCode.YOUR_PAGES_NOT_ENOUGH);
         // }
         Integer getPages = student.getPages();
         String typePaper = printingRequest.getTypePaper();
-        if(typePaper.equals("A0")){
-            Integer pagesTransfer = pages*5;
-            if(pages > printer.getPagesA0()){
-                throw new AppException(ErrorCode.PAGES_NOT_ENOUGH_IN_PRINTER);
-            }
-            else if(getPages < pagesTransfer){
-                throw new AppException(ErrorCode.YOUR_PAGES_NOT_ENOUGH);
-            }
-            student.setPages(student.getPages() - pagesTransfer);
-            printer.setPagesA0(printer.getPagesA0() - pages);
-        }
-        else if(typePaper.equals("A1")){
-            Integer pagesTransfer = pages*4;
-            if(pages > printer.getPagesA1()){
-                throw new AppException(ErrorCode.PAGES_NOT_ENOUGH_IN_PRINTER);
-            }
-            else if(getPages < pagesTransfer){
-                throw new AppException(ErrorCode.YOUR_PAGES_NOT_ENOUGH);
-            }
-            student.setPages(student.getPages() - pagesTransfer);
-            printer.setPagesA1(printer.getPagesA1() - pages);
-        }
-        else if(typePaper.equals("A2")){
+        if(typePaper.equals("A2")){
             Integer pagesTransfer = pages*3;
             if(pages > printer.getPagesA2()){
                 throw new AppException(ErrorCode.PAGES_NOT_ENOUGH_IN_PRINTER);
@@ -106,7 +87,7 @@ public class PrintingRequestService {
             else if(getPages < pagesTransfer){
                 throw new AppException(ErrorCode.YOUR_PAGES_NOT_ENOUGH);
             }
-            student.setPages(student.getPages() - pagesTransfer);
+            transactionService.minusPage(pagesTransfer, id);
             printer.setPagesA2(printer.getPagesA2() - pages);
         }
         else if(typePaper.equals("A3")){
@@ -117,7 +98,7 @@ public class PrintingRequestService {
             else if(getPages < pagesTransfer){
                 throw new AppException(ErrorCode.YOUR_PAGES_NOT_ENOUGH);
             }
-            student.setPages(student.getPages() - pagesTransfer);
+            transactionService.minusPage(pagesTransfer, id);
             printer.setPagesA3(printer.getPagesA3() - pages);
             
         }
@@ -128,7 +109,7 @@ public class PrintingRequestService {
             else if(getPages < pages){
                 throw new AppException(ErrorCode.YOUR_PAGES_NOT_ENOUGH);
             }
-            student.setPages(student.getPages() - pages);
+            transactionService.minusPage(pages, id);
             printer.setPagesA4(printer.getPagesA4() - pages);
         }
         printingRequest.setCreatedAt(LocalDateTime.now());
@@ -136,7 +117,7 @@ public class PrintingRequestService {
         
         printer.setIsAvailable(false);
         
-
+        
         printingRequestRepository.save(printingRequest);
 
         scheduler.schedule(() -> {

@@ -9,7 +9,7 @@ import com.example.demo.models.Transaction;
 
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
-    @Mapping(target = "accountId", ignore = true)
+    //@Mapping(target = "accountId", ignore = true)
     TransactionResponse toResponse(Transaction transaction);
     Transaction toTransaction(TransactionCreateRequest request);
 }

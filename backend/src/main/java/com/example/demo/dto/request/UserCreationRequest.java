@@ -8,9 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class UserCreationRequest {
+public class UserCreationRequest {
     private String name;
-    private String fullname;
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 }

@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,16 +22,24 @@ import lombok.RequiredArgsConstructor;
 public class TransactionController {
     private final TransactionService transactionService;
 
-    @PostMapping("/payment/{accountId}")
-    public ApiResponse<Transaction> createPaymentTransaction(@RequestBody  TransactionCreateRequest request, @PathVariable Integer accountId){
-        return ApiResponse.<Transaction>builder().
-                            result(transactionService.createPaymentTransaction(request, accountId)).
+    @PostMapping("/pluspage/{studentID}")
+    public ApiResponse<Boolean> createPaymentTransaction(@RequestBody  TransactionCreateRequest request, @PathVariable Integer studentID){
+        return ApiResponse.<Boolean>builder().
+                            result(transactionService.buyPage(request, studentID)).
                             build();
     }
-    @PostMapping("/recharge/{accountId}")
-    public ApiResponse<Transaction> createRechargeTransaction(@RequestBody  TransactionCreateRequest request, @PathVariable Integer accountId){
-        return ApiResponse.<Transaction>builder().
-                            result(transactionService.CreateRechargeTransaction(request, accountId)).
+    // @PostMapping("/minuspage/{studentID}")
+    // public ApiResponse<Boolean> createRechargeTransaction(@RequestBody  TransactionCreateRequest request, @PathVariable Integer studentID){
+    //     return ApiResponse.<Boolean>builder().
+    //                         result(transactionService.minusPage(request, studentID)).
+    //                         build();
+    // }
+
+
+    @GetMapping("/getalltransactions/{studentID}")
+    public ApiResponse<List<Transaction>> getAll(@PathVariable Integer studentID){
+        return ApiResponse.<List<Transaction>>builder().
+                            result(transactionService.getALlTransactions(studentID)).
                             build();
     }
 }

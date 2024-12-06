@@ -30,6 +30,7 @@ public class PrintingRequest {
     private Integer copies;
     private Integer pages;
     private String typePaper;
+    private Integer somat;
     private LocalDateTime createdAt;
     @ManyToOne
     @JsonIgnore

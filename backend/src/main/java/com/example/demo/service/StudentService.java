@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +13,7 @@ import com.example.demo.dto.request.AccountCreateRequest;
 import com.example.demo.dto.request.ChangPassRequest;
 import com.example.demo.dto.request.PrintingRequestCreation;
 import com.example.demo.dto.request.StudentCreateRequest;
+import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.response.StudentResponse;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
@@ -21,6 +23,7 @@ import com.example.demo.models.Account;
 import com.example.demo.models.Printer;
 import com.example.demo.models.PrintingRequest;
 import com.example.demo.models.Student;
+import com.example.demo.models.Transaction;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.repository.StudentRepository;
 import com.example.demo.repository.UserRepository;
@@ -41,18 +44,33 @@ public class StudentService {
     private final PrintingRequestRepository printingRequestRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    public StudentResponse createStudent(StudentCreateRequest request){
-        if(userRepository.existsByName(request.getName())){
-            throw new AppException(ErrorCode.USER_EXISTED);
+    private final ExternalAPIService externalAPIService;
+    public void createStudent(String name, String password){
+
+        if(!externalAPIService.checkLogin(name,password)){
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
-        Student student = studentMapper.toStudent(request);
+        Map<String, Object> mp = externalAPIService.checkLogin2(name,password);
+        StudentCreateRequest rq =new StudentCreateRequest();
+        rq.setName(name);
+        rq.setPassword(password);
+        Student student = studentMapper.toStudent(rq);
         student.setPages(100);
         student.setPassword(passwordEncoder.encode(student.getPassword()));
         Account account = Account.builder().balance(100000).build();
         account.setStudent(student);
         student.setAccount(account);
+        student.setFullname(mp.get("lastName")+" "+mp.get("firstName"));
+        student.setEmail(String.valueOf(mp.get("orgEmail")));
+        student.setMssv(String.valueOf(mp.get("code")));
+        student.setDiachi(String.valueOf(mp.get("idCardPlace")));
+        Map<String, Object> mp1=(Map<String, Object>)mp.get("teachingDep");
+        student.setNganh(String.valueOf(mp1.get("nameVi")));
+        Map<String, Object> mp2=(Map<String, Object>)mp.get("major");
+        student.setKhoa(String.valueOf(mp2.get("nameVi")));
         student.setRole("STUDENT");
-        return studentMapper.toResponse(userRepository.save(student));
+        userRepository.save(student);
+        
     }
 
     // public List<Student> getAllStudents(){
@@ -94,4 +112,35 @@ public class StudentService {
         student.setPassword(passwordEncoder.encode(request.getNewPassword()));
         return studentMapper.toResponse(studentRepository.save(student));
     }
+
+
+    public Integer totalPageBuy(Integer id){
+        Student student=studentRepository.findById(id).orElse(null);
+        Integer total = student.getAccount().getTransactions().stream()
+        .filter(tr -> "buyPage".equals(tr.getType()))
+        .mapToInt(Transaction::getAmount)
+        .sum();
+        return total;
+
+
+    }
+
+
+
+    public Integer totalPagePrinted(Integer id){
+        Student student=studentRepository.findById(id).orElse(null);
+        Integer total = student.getAccount().getTransactions().stream()
+        .filter(tr -> "minusPage".equals(tr.getType()))
+        .mapToInt(Transaction::getAmount)
+        .sum();
+        return total;
+
+
+    }
+
+    public List<PrintingRequest> getAllPrinting(Integer id){
+        Student student=studentRepository.findById(id).orElse(null);
+        return student.getPrintingRequests();
+    }
+
 }

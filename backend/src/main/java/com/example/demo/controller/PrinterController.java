@@ -26,6 +26,15 @@ public class PrinterController {
                             result(printerService.getPrintersByLocationId(locationId)).
                             build();
     }
+
+
+    @GetMapping("/getAll")
+    public ApiResponse<List<Printer>> getPrinters(){
+        return ApiResponse.<List<Printer>>builder().
+                            result(printerService.getAllPrinters()).
+                            build();
+    }
+
     @PostMapping("create/{locationId}")
     public ApiResponse<Printer> createPrinter(@RequestBody Printer request, @PathVariable Integer locationId){
         return ApiResponse.<Printer>builder().

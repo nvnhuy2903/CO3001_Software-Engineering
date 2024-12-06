@@ -41,8 +41,6 @@ public class PrinterService {
         if(printer==null){
             throw new AppException(ErrorCode.PRINTER_NOT_FOUND);
         }
-        printer.setPagesA0(request.getPagesA0()+printer.getPagesA0());
-        printer.setPagesA1(request.getPagesA1()+printer.getPagesA1());
         printer.setPagesA2(request.getPagesA2()+printer.getPagesA2());
         printer.setPagesA3(request.getPagesA3()+printer.getPagesA3());
         printer.setPagesA4(request.getPagesA4()+printer.getPagesA4());
@@ -62,5 +60,9 @@ public class PrinterService {
             throw new AppException(ErrorCode.PRINTER_NOT_FOUND);
         }
         return printer;
+    }
+
+    public List<Printer> getAllPrinters(){
+        return printerRepository.findAll();
     }
 }

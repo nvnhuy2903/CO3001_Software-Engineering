@@ -46,12 +46,12 @@ public class StudentController {
     //                         result(studentService.createPrintingRequest(request)).
     //                         build();
     // }
-    @PostMapping("/create")
-    public ApiResponse<StudentResponse> createStudent(@Valid @RequestBody StudentCreateRequest request){
-        return ApiResponse.<StudentResponse>builder().
-                            result(studentService.createStudent(request)).
-                            build();
-    }
+    // @PostMapping("/create")
+    // public ApiResponse<StudentResponse> createStudent(@Valid @RequestBody StudentCreateRequest request){
+    //     return ApiResponse.<StudentResponse>builder().
+    //                         result(studentService.createStudent(request)).
+    //                         build();
+    // }
     @PostMapping("/checkLogin")
     public ApiResponse<Boolean> checkLogin(@RequestParam String username, @RequestParam String password){
         return ApiResponse.<Boolean>builder().
@@ -70,6 +70,30 @@ public class StudentController {
     public ApiResponse<StudentResponse> changePassword(@Valid @RequestBody ChangPassRequest request){
         return ApiResponse.<StudentResponse>builder().
                             result(studentService.changePassword(request)).
+                            build();
+    }
+
+
+    @GetMapping("/getpagebuy/{id}")
+    public ApiResponse<Integer> getbuy(@PathVariable Integer id){
+        return ApiResponse.<Integer>builder().
+                            result(studentService.totalPageBuy(id)).
+                            build();
+    }
+
+
+    @GetMapping("/getpageprinted/{id}")
+    public ApiResponse<Integer> getprinted(@PathVariable Integer id){
+        return ApiResponse.<Integer>builder().
+                            result(studentService.totalPagePrinted(id)).
+                            build();
+    }
+
+
+    @GetMapping("/getallrequest/{id}")
+    public ApiResponse<List<PrintingRequest>> getrequests(@PathVariable Integer id){
+        return ApiResponse.<List<PrintingRequest>>builder().
+                            result(studentService.getAllPrinting(id)).
                             build();
     }
 }

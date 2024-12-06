@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,9 @@ import jakarta.validation.Valid;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     @PostMapping("/check")
-    public ApiResponse<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request){
+    public ApiResponse<AuthenticationResponse> login(@RequestParam String username, @RequestParam String password){
         return ApiResponse.<AuthenticationResponse>builder()
-            .result(authenticationService.checkPass(request.getName(), request.getPassword()))
+            .result(authenticationService.checkPass(username, password))
             .build();
     }
 }
