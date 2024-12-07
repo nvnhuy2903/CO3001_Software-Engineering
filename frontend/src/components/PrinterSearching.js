@@ -2,6 +2,7 @@ import {React, useState} from "react"
 import MainLayout from "./MainLayout";
 import { HStack, Heading, Stack, Table, Input, Button, Icon } from "@chakra-ui/react"
 import { InputGroup } from "./ui/input-group"
+import {Link } from "react-router-dom";
 
 import {
   PaginationItems,
@@ -32,8 +33,8 @@ const PrinterSearching = () => {
     
     //---------------------------------------- Handle Search ----------------------------------------------
     const[searchName, setSearchName] = useState('');
-    const [searchBuilding, setsearchBuilding] = useState('');
-    const [searchStatus, setSearchStatus] = useState('');
+    const [searchBuilding, setsearchBuilding] = useState('All');
+    const [searchStatus, setSearchStatus] = useState('All');
 
     const handleSearch= () => {
         const filteredResult = printerData.filter((row) => {
@@ -131,15 +132,40 @@ const handlePrevPage = () => {
                     </Table.Header>
                     <Table.Body>
                     {currentPageData.map((item) => (
-                        <Table.Row key={item.id}>
-                            <Table.Cell>{item.id}</Table.Cell>
-                            <Table.Cell>{item.name}</Table.Cell>
-                            <Table.Cell>{item.brand}</Table.Cell>
-                            <Table.Cell>{item.model}</Table.Cell>
-                            <Table.Cell>{item.building}</Table.Cell>
-                            <Table.Cell>{item.room}</Table.Cell>
-                            <Table.Cell>{item.status}</Table.Cell>
-                        </Table.Row>
+                            <Table.Row key={item.id}>
+                                <Table.Cell>{item.id}</Table.Cell>
+                                <Table.Cell>
+                                    <Link to="/print">
+                                        {item.name}
+                                    </Link>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Link to="/print">
+                                        {item.brand}
+                                    </Link>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Link to="/print">
+                                        {item.model}
+                                    </Link>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Link to="/print">
+                                        {item.building}
+                                    </Link>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Link to="/print">
+                                        {item.room}
+                                    </Link>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Link to="/print">
+                                        {item.status}
+                                    </Link>
+                                </Table.Cell>
+                            </Table.Row>
+                        
                     ))}
                     </Table.Body>
                 </Table.Root>
