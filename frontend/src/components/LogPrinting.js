@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
+import axios from 'axios'
 import MainLayout from './MainLayout'
 import { FaPrint } from 'react-icons/fa'
 import { Pie } from 'react-chartjs-2'
@@ -9,305 +10,27 @@ import { FaSortUp } from 'react-icons/fa6'
 import { FaSortDown } from 'react-icons/fa6'
 import './LogPrinting.css'
 
-const mockData = {
-  printingHistory: [
-    {
-      fileName: 'filename.docx',
-      printerId: 1,
-      startTime: '2024-10-07T15:20:34',
-      endTime: null,
-      pages: 28,
-      size: 'A4',
-      status: 'Đang xử lý',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 2,
-      startTime: '2024-10-07T13:56:28',
-      endTime: '2024-10-07T14:15:38',
-      pages: 32,
-      size: 'A3',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 5,
-      startTime: '2024-10-07T10:45:07',
-      endTime: '2024-10-07T11:02:32',
-      pages: 128,
-      size: 'A4',
-      status: 'Thất bại',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 3,
-      startTime: '2024-10-07T07:32:46',
-      endTime: '2024-10-07T07:35:11',
-      pages: 5,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 9,
-      startTime: '2024-10-06T16:49:32',
-      endTime: '2024-10-06T17:01:47',
-      pages: 44,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 7,
-      startTime: '2024-10-06T16:32:14',
-      endTime: '2024-10-06T16:58:21',
-      pages: 98,
-      size: 'A4',
-      status: 'Thất bại',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 2,
-      startTime: '2024-10-06T13:02:39',
-      endTime: '2024-10-06T13:05:42',
-      pages: 102,
-      size: 'A3',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 4,
-      startTime: '2024-10-06T09:31:18',
-      endTime: '2024-10-06T09:40:27',
-      pages: 68,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 2,
-      startTime: '2024-10-06T08:19:17',
-      endTime: '2024-10-06T08:27:54',
-      pages: 77,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 10,
-      startTime: '2024-10-05T14:38:43',
-      endTime: '2024-10-05T14:47:29',
-      pages: 118,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 1,
-      startTime: '2024-10-07T15:20:34',
-      endTime: null,
-      pages: 28,
-      size: 'A4',
-      status: 'Đang xử lý',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 2,
-      startTime: '2024-10-07T13:56:28',
-      endTime: '2024-10-07T14:15:38',
-      pages: 32,
-      size: 'A3',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 5,
-      startTime: '2024-10-07T10:45:07',
-      endTime: '2024-10-07T11:02:32',
-      pages: 128,
-      size: 'A4',
-      status: 'Thất bại',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 3,
-      startTime: '2024-10-07T07:32:46',
-      endTime: '2024-10-07T07:35:11',
-      pages: 5,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 9,
-      startTime: '2024-10-06T16:49:32',
-      endTime: '2024-10-06T17:01:47',
-      pages: 44,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 7,
-      startTime: '2024-10-06T16:32:14',
-      endTime: '2024-10-06T16:58:21',
-      pages: 98,
-      size: 'A4',
-      status: 'Thất bại',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 2,
-      startTime: '2024-10-06T13:02:39',
-      endTime: '2024-10-06T13:05:42',
-      pages: 102,
-      size: 'A3',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 4,
-      startTime: '2024-10-06T09:31:18',
-      endTime: '2024-10-06T09:40:27',
-      pages: 68,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 2,
-      startTime: '2024-10-06T08:19:17',
-      endTime: '2024-10-06T08:27:54',
-      pages: 77,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 10,
-      startTime: '2024-10-05T14:38:43',
-      endTime: '2024-10-05T14:47:29',
-      pages: 118,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 1,
-      startTime: '2024-10-07T15:20:34',
-      endTime: null,
-      pages: 28,
-      size: 'A4',
-      status: 'Đang xử lý',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 2,
-      startTime: '2024-10-07T13:56:28',
-      endTime: '2024-10-07T14:15:38',
-      pages: 32,
-      size: 'A3',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 5,
-      startTime: '2024-10-07T10:45:07',
-      endTime: '2024-10-07T11:02:32',
-      pages: 128,
-      size: 'A4',
-      status: 'Thất bại',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 3,
-      startTime: '2024-10-07T07:32:46',
-      endTime: '2024-10-07T07:35:11',
-      pages: 5,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 9,
-      startTime: '2024-10-06T16:49:32',
-      endTime: '2024-10-06T17:01:47',
-      pages: 44,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 7,
-      startTime: '2024-10-06T16:32:14',
-      endTime: '2024-10-06T16:58:21',
-      pages: 98,
-      size: 'A4',
-      status: 'Thất bại',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 2,
-      startTime: '2024-10-06T13:02:39',
-      endTime: '2024-10-06T13:05:42',
-      pages: 102,
-      size: 'A3',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 4,
-      startTime: '2024-10-06T09:31:18',
-      endTime: '2024-10-06T09:40:27',
-      pages: 68,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 2,
-      startTime: '2024-10-06T08:19:17',
-      endTime: '2024-10-06T08:27:54',
-      pages: 77,
-      size: 'A4',
-      status: 'Thành công',
-    },
-    {
-      fileName: 'filename.docx',
-      printerId: 10,
-      startTime: '2024-10-05T14:38:43',
-      endTime: '2024-10-05T14:47:29',
-      pages: 118,
-      size: 'A4',
-      status: 'Thành công',
-    },
-  ],
+var mockData = {
+  printingHistory: [],
   printingStats: {
-    successfulPrints: 48,
-    totalPages: 580,
-    lastPrintTime: '2024-10-07T15:20:34',
+    successfulPrints: 0,
+    totalPages: 0,
+    lastPrintTime: '2000-00-00T00:00:00',
     fileTypeBreakdown: {
-      '.doc': 12,
-      '.pptx': 6,
-      '.xlsx': 4,
-      '.pdf': 26,
-    },
-  },
-  printingStats: {
-    successfulPrints: 48,
-    totalPages: 580,
-    lastPrintTime: '2024-10-07T15:20:34',
-    fileTypeBreakdown: {
-      '.doc': 12,
-      '.pptx': 6,
-      '.xlsx': 4,
-      '.pdf': 26,
+      doc: 0,
+      pdf: 0,
+      img: 0,
     },
   },
 }
 
+const BASE_URL = ''
+const STUDENT_ID = 4
+const TOKEN =
+  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dWFuLm5ndXllbmtobXRrMjIiLCJleHAiOjE3MzM2ODE0MjUsImlhdCI6MTczMzY3NzgyNSwianRpIjoiZTc1ZmUyZDYtNDhhOC00MmJjLTljNDAtY2JlYWQ0YjMwNWIxIiwic2NvcGUiOiJTVFVERU5UIn0.iUNbYLO6Jvx25qmXohvPwmyMKwU8QmHvGV_AnrhM8zD8C3iPpoApWdV2ZnCl4brPsRZXSmMG56sKM_5aKJXi9Q'
 const LogPrinting = () => {
   const [history, setHistory] = useState(mockData.printingHistory)
+  const [statistics, setStats] = useState(mockData.printingStats)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortField, setSortField] = useState('startTime')
@@ -316,12 +39,81 @@ const LogPrinting = () => {
   const [filterStatus, setFilterStatus] = useState('')
   const rowsPerPage = 10
 
+  useEffect(() => {
+    const fetchPrintingHistory = async () => {
+      try {
+        const response = await axios.get(
+          `/student/getallrequest/${STUDENT_ID}`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${TOKEN}`,
+              'Access-Control-Allow-Origin': '*',
+            },
+          }
+        )
+        if (response.data.code === 1000) {
+          mockData['printingHistory'] = response.data.result
+          var updatedHistory = response.data.result.map((row) => {
+            let createdAtDate = new Date(row.createdAt) // Parse createdAt to Date object
+            row.startTime = createdAtDate.toLocaleString()
+
+            row.updateAtDate = new Date(createdAtDate.getTime() + 10000) // Add 10 seconds
+
+            // Compare endTime with the current time
+            if (row.updateAtDate < new Date()) {
+              row.status = 'Thành công'
+              row.endTime = row.updateAtDate.toLocaleString()
+              mockData.printingStats.successfulPrints += 1
+              mockData.printingStats.totalPages +=
+                row.copies *
+                row.pages *
+                (row.typePaper == 'A4' ? 1 : row.typePaper == 'A3' ? 2 : 3)
+              // File extension checks using includes()
+              if (
+                row.fileName.includes('.docx') ||
+                row.fileName.includes('.doc')
+              ) {
+                mockData.printingStats.fileTypeBreakdown['doc'] += 1
+              } else if (row.fileName.includes('.pdf')) {
+                mockData.printingStats.fileTypeBreakdown['pdf'] += 1
+              } else if (
+                row.fileName.includes('.jpg') ||
+                row.fileName.includes('.jpeg') ||
+                row.fileName.includes('.png')
+              ) {
+                mockData.printingStats.fileTypeBreakdown['img'] += 1
+              }
+            } else {
+              row.status = 'Đang xử lý'
+              row.endTime = '/'
+            }
+            return row
+          })
+
+          mockData.printingStats.lastPrintTime =
+            updatedHistory[updatedHistory.length - 1].startTime
+
+          setHistory(updatedHistory)
+          setStats(mockData.printingStats)
+        }
+      } catch (error) {
+        console.error('Failed to fetch printing history:', error)
+      }
+    }
+
+    fetchPrintingHistory()
+  }, [])
+
   // Pagination logic
   const startIndex = (currentPage - 1) * rowsPerPage
   const filteredSortedRows = useMemo(() => {
     return history
       .filter((row) => {
-        const rowMonth = new Date(row.startTime).getMonth()
+        const rowMonth = new Date(row.createdAt).getMonth()
+        if (!row.status) {
+          row.status = 'Thành công'
+        }
         return (
           (!searchTerm ||
             row.fileName.toLowerCase().includes(searchTerm.toLowerCase())) &&
@@ -372,8 +164,8 @@ const LogPrinting = () => {
       {
         label: 'File Types',
         data: Object.values(mockData.printingStats.fileTypeBreakdown),
-        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'],
-        hoverOffset: 4,
+        backgroundColor: ['#2F88FF', '#FF3B30', '#FF9500'],
+        hoverOffset: 2,
       },
     ],
   }
@@ -487,8 +279,8 @@ const LogPrinting = () => {
               <th onClick={() => handleSort('fileName')}>
                 <p> Tên file {getSortIndicator('fileName')} </p>
               </th>
-              <th onClick={() => handleSort('printerId')}>
-                <p> ID máy {getSortIndicator('printerId')}</p>
+              <th onClick={() => handleSort('fileSize')}>
+                <p>Kích thước {getSortIndicator('fileSize')}</p>
               </th>
               <th onClick={() => handleSort('startTime')}>
                 <p>Bắt đầu in {getSortIndicator('startTime')}</p>
@@ -497,10 +289,13 @@ const LogPrinting = () => {
                 <p>Kết thúc {getSortIndicator('endTime')}</p>
               </th>
               <th onClick={() => handleSort('pages')}>
-                <p>Số trang {getSortIndicator('pages')}</p>
+                <p> Trang/Bản {getSortIndicator('pages')}</p>
               </th>
-              <th onClick={() => handleSort('size')}>
-                <p>Kích thước {getSortIndicator('size')}</p>
+              <th onClick={() => handleSort('copies')}>
+                <p> Số bản {getSortIndicator('copies')}</p>
+              </th>
+              <th onClick={() => handleSort('typePaper')}>
+                <p>Loại {getSortIndicator('typePaper')}</p>
               </th>
               <th onClick={() => handleSort('status')}>
                 <p> Trạng thái {getSortIndicator('status')}</p>
@@ -508,44 +303,66 @@ const LogPrinting = () => {
             </tr>
           </thead>
           <tbody>
-            {currentRows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.fileName} </td>
-                <td>{row.printerId}</td>
-                <td>{row.startTime}</td>
-                <td>{row.endTime || '/'}</td>
-                <td>{row.pages}</td>
-                <td>{row.size}</td>
+            {currentRows.length === 0 ? (
+              <tr>
                 <td
-                  className={`status ${
-                    row.status === 'Thành công'
-                      ? 'success'
-                      : row.status === 'Thất bại'
-                      ? 'fail'
-                      : 'processing'
-                  }`}
+                  colSpan="8"
+                  style={{
+                    textAlign: 'center',
+                    padding: '20px',
+                    color: 'red',
+                    fontSize: '32px',
+                  }}
                 >
-                  {row.status}
+                  No files found
                 </td>
               </tr>
-            ))}
+            ) : (
+              currentRows.map((row, index) => (
+                <tr key={index}>
+                  {/* <td>{row.id}</td> */}
+                  <td>{row.fileName} </td>
+                  <td style={{ textAlign: 'center' }}>
+                    {(row.fileSize / 1024 ** 2).toFixed(2)}MB
+                  </td>
+                  <td>{row.startTime}</td>
+                  <td>{row.endTime || '/'}</td>
+                  <td style={{ textAlign: 'center' }}>{row.pages}</td>
+                  <td style={{ textAlign: 'center' }}>{row.copies}</td>
+                  <td style={{ textAlign: 'center' }}>{row.typePaper}</td>
+                  <td
+                    className={`status ${
+                      row.status === 'Thành công'
+                        ? 'success'
+                        : row.status === 'Thất bại'
+                        ? 'fail'
+                        : 'processing'
+                    }`}
+                  >
+                    {row.status}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
 
         {/* Pagination */}
-        <div className="pagination">
-          {[...Array(Math.ceil(history.length / rowsPerPage)).keys()].map(
-            (i) => (
-              <button
-                key={i}
-                onClick={() => handlePageChange(i + 1)}
-                className={currentPage === i + 1 ? 'active' : ''}
-              >
-                {i + 1}
-              </button>
-            )
-          )}
-        </div>
+        {currentRows.length !== 0 && (
+          <div className="pagination">
+            {[...Array(Math.ceil(history.length / rowsPerPage)).keys()].map(
+              (i) => (
+                <button
+                  key={i}
+                  onClick={() => handlePageChange(i + 1)}
+                  className={currentPage === i + 1 ? 'active' : ''}
+                >
+                  {i + 1}
+                </button>
+              )
+            )}
+          </div>
+        )}
       </div>
     </MainLayout>
   )
