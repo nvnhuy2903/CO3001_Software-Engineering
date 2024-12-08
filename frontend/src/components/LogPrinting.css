@@ -1,0 +1,239 @@
+.log-printing {
+  font-family: 'VT323';
+  font-size: 24px;
+  color: #030391;
+  display: flex;
+  flex-direction: column;
+}
+
+.Title {
+  color: #1488d8;
+  font-size: 24px;
+  font-family: 'Coiny', sans-serif;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 10px auto;
+
+  h1 {
+    margin: 0;
+  }
+
+  svg {
+    margin-left: 10px;
+  }
+}
+
+.statistics {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: auto;
+  margin-bottom: 22px;
+  width: 90%;
+}
+
+.statistics .stats-general {
+  width: 50%;
+}
+
+.statistics .stats-general .info-div {
+  display: flex;
+  margin-bottom: 10px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.statistics .stats-general span {
+  text-align: center;
+  font-weight: bold;
+  margin: auto;
+  border: 1px solid #030391;
+  padding: 4px;
+  border-radius: 12px;
+  min-width: 10%;
+}
+
+.statistics .chart-statistics {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  border: 1px solid #030391;
+  padding: 12px;
+  border-radius: 12px;
+}
+.statistics .chart-statistics .pie-chart {
+  height: 25vh !important;
+  width: 50%;
+}
+.statistics .chart-statistics .pie-table {
+  margin: 0;
+  width: 50% !important;
+  font-size: 20px;
+  thead {
+    th {
+      padding: 0;
+      text-align: center;
+      border-bottom: 1px solid #030391;
+    }
+  }
+  tbody {
+    td {
+      padding: 0;
+      text-align: center;
+    }
+  }
+}
+
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  margin: auto;
+  input,
+  select {
+    background-color: #fff;
+  }
+}
+
+.table-controls .search-bar {
+  font-size: 18px !important;
+
+  width: 50%;
+  display: flex;
+  align-items: center;
+  border: 2px solid #1488d8;
+  border-radius: 32px;
+  padding: 8px;
+  input {
+    width: 90%;
+    margin-left: 12px;
+    outline: none;
+  }
+}
+
+.table-controls .sorting {
+  font-size: 18px !important;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  select {
+    margin-left: 12px;
+    margin-right: 12px;
+    background-color: #1488d8;
+    color: #fff;
+    padding: 12px;
+    border-radius: 32px;
+  }
+  button {
+    margin-left: 12px;
+    margin-right: 12px;
+    background-color: #1488d8;
+    color: #fff;
+    padding: 8px;
+    border-radius: 32px;
+  }
+  select option {
+    background-color: #fff;
+    color: #1488d8;
+  }
+}
+
+.printing-table {
+  width: 90%;
+  margin: 20px auto;
+  border-collapse: collapse;
+  font-size: 22px;
+
+  color: #030391;
+
+  thead {
+    background-color: rgba(20, 136, 216, 0.5);
+
+    th {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #030391;
+
+      p {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      &:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      &:nth-child(odd) {
+        background-color: #fff;
+      }
+
+      &:hover {
+        background-color: #e8f4fc;
+      }
+    }
+
+    td {
+      padding: 10px;
+      border: 1px solid #030391;
+
+      &:last-child {
+        font-weight: bold;
+
+        &.processing {
+          color: #ffa500;
+        }
+
+        &.success {
+          color: #28a745;
+        }
+
+        &.fail {
+          color: #dc3545;
+        }
+      }
+    }
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+
+  button {
+    background: #1488d8;
+    color: #fff;
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+
+    &:hover {
+      background-color: #0d6efd;
+    }
+
+    &.active {
+      background-color: #0d6efd;
+      font-weight: bold;
+    }
+
+    &:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  }
+}
