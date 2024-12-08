@@ -2,6 +2,7 @@ import React from "react";
 import {Link } from "react-router-dom";
 import {Box, HStack, Heading} from "@chakra-ui/react"
 import { Avatar, AvatarGroup } from "./ui/avatar"
+import '../App.css';
 
 const Header = () => {
     return (
@@ -15,16 +16,18 @@ const Header = () => {
             align="center" 
             justifyContent="space-between">
                 <HStack>
-                    <Heading fontSize="20px" fontFamily="Coiny">HCMUT-SSPS</Heading>
+                    <Link to="/homepage" className="nav-item">
+                        <Heading fontSize="20px" fontFamily="Coiny">HCMUT-SSPS</Heading>
+                    </Link>
                 </HStack>
                 <HStack gap="16">
                     <nav>
                         <HStack gap="8" fontSize="20px">
-                            <Link to="/homepage" className="nav-item">Trang Chủ</Link>
-                            <Link to="/aboutUs" className="nav-item">Chúng tôi</Link>
-                            <Link to="/service" className="nav-item">Dịch vụ in</Link>
-                            <Link to="/transaction" className="nav-item">Giao dịch</Link>
-                            <Link to="/print" className="nav-item">In ngay</Link>
+                            <Link to="/homepage" className="nav-item hover-navbar">Trang Chủ</Link>
+                            <Link to="/aboutUs" className="nav-item hover-navbar">Chúng tôi</Link>
+                            <Link to="/service" className="nav-item hover-navbar">Dịch vụ in</Link>
+                            <Link to="/transaction" className="nav-item hover-navbar">Giao dịch</Link>
+                            <Link to="/print" className="nav-item hover-navbar">In ngay</Link>
                         </HStack>
                     </nav>
                     <AvatarGroup>
