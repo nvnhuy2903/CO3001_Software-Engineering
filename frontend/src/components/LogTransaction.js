@@ -1,7 +1,9 @@
-import {React, useState} from "react"
+import {React, useState, useEffect} from "react"
+import axios from 'axios'
 import MainLayout from "./MainLayout";
 import { HStack, Heading, Stack, Table, Input, Button, Icon, Box, Text, Badge } from "@chakra-ui/react"
 import { InputGroup } from "./ui/input-group"
+import { format } from 'date-fns'; 
 
 import {
   PaginationItems,
@@ -18,7 +20,7 @@ import {
 const LogTransaction = () => {
     // --------------------------------------Sample Data------------------------------------------------------------
     const [transactions, setTransactions] = useState([
-        { id: '000000001', time: "07/10/2024 - 15:20:34", amount: 28, balance: 78 },
+        /* { id: '000000001', time: "07/10/2024 - 15:20:34", amount: 28, balance: 78 },
         { id: '000000002', time: "07/10/2024 - 15:20:34", amount: -20, balance: 50 },
         { id: '000000004', time: "07/10/2024 - 15:20:34", amount: 50, balance: 70 },
         { id: '000000005', time: "07/10/2024 - 15:20:34", amount: -40, balance: 20 },
@@ -27,11 +29,48 @@ const LogTransaction = () => {
         { id: '000000009', time: "07/10/2024 - 15:20:34", amount: -35, balance: 26 },
         { id: '000000010', time: "07/10/2024 - 15:20:34", amount: -12, balance: 14 },
         { id: '000000011', time: "07/10/2024 - 15:20:34", amount: 2, balance: 2 },
-        { id: '000000012', time: "07/10/2024 - 15:20:34", amount: -10, balance: 0 },
+        { id: '000000012', time: "07/10/2024 - 15:20:34", amount: -10, balance: 0 } */,
       ]);
     const [filteredData, setfilteredData] = useState(transactions);
     // --------------------------------------End Sample Data------------------------------------------------------------
     
+    // --------------------------------------Fetch Data------------------------------------------------------------
+    const studentid = 4;
+    const TOKEN = 
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXkubmd1eWVuMjkwMzIwMDQiLCJleHAiOjE3MzM3MjM2MzYsImlhdCI6MTczMzcyMDAzNiwianRpIjoiMTE0ZDQxMGYtYjc5Zi00M2EwLTg5ZDQtNzdiYTY5YmFiN2YyIiwic2NvcGUiOiJTVFVERU5UIn0.Qz66jkrYWKExpvTMQX6EEIk_JeOS8kKjdGRirGL0QzY4gBM4bq6aUG1zo5nhF_6icr65OaWjkRWyva_SSG9K9g";
+    useEffect(() => {
+        const fetchTransData = async () => {
+        try {
+            const response = await axios.get(
+            `/transactions/getalltransactions/${studentid}`,
+            {
+                withCredentials: true,
+                headers: {
+                Authorization: `Bearer ${TOKEN}`,
+                'Access-Control-Allow-Origin': '*',
+                },
+            }
+            )
+            if (response.data.code === 1000) {
+                const formattedData = response.data.result.map(transaction => ({
+                    id: transaction.id.toString(), // Ensure the ID is 9 digits
+                    time: format(new Date(transaction.date), 'MM/dd/yyyy - HH:mm:ss'), // Format date
+                    amount: transaction.type === 'minusPage' ? -transaction.amount : transaction.amount,
+                    balance: transaction.balanceAfter,
+                  }));
+            console.log("successfull fetching");
+            setTransactions(formattedData);
+            setfilteredData(formattedData);
+            }
+        } catch (error) {
+            console.error('Failed to fetch printing history:', error);
+        }
+        }
+
+        fetchTransData();
+    }, [])
+    // --------------------------------------End Fetch Data------------------------------------------------------------
+
     // Calculate totals
     const totalPurchased = transactions
     .filter((t) => t.amount > 0) // Only positive amounts
@@ -109,17 +148,6 @@ const lastPurchase = transactions[0]?.time || "No transactions available";
                             borderWidth="2px"
                         />
                     </InputGroup>
-                    <select placeholder="Học kỳ" 
-                    style={{ backgroundColor: 'rgba(20, 136, 216, 1)', color: 'white',  
-                        height: '40px', borderRadius: '13px', width: '85px', textAlign: 'center'}} 
-                    onChange={(e) => setSearchSemester(e.target.value)}>
-                        <option value="All">All</option>
-                        <option value="241">241</option>
-                        <option value="233">233</option>
-                        <option value="232">232</option>
-                        <option value="231">231</option>
-                        <option value="223">223</option>
-                    </select>
 
                     <select placeholder="Trạng thái" 
                     style={{ backgroundColor: 'rgba(20, 136, 216, 1)', color: 'white', 

@@ -1,10 +1,42 @@
-import React from "react";
-import {Link } from "react-router-dom";
+import React from "react"
+import {useState, useEffect} from "react"
+import axios from 'axios'
+import {Link } from "react-router-dom"
 import {Box, HStack, Heading} from "@chakra-ui/react"
 import { Avatar, AvatarGroup } from "./ui/avatar"
 import '../App.css';
 
 const Header = () => {
+    const [userName, setUserName] = useState('');
+    const studentid = 4;
+    const TOKEN = 
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXkubmd1eWVuMjkwMzIwMDQiLCJleHAiOjE3MzM3MjM2MzYsImlhdCI6MTczMzcyMDAzNiwianRpIjoiMTE0ZDQxMGYtYjc5Zi00M2EwLTg5ZDQtNzdiYTY5YmFiN2YyIiwic2NvcGUiOiJTVFVERU5UIn0.Qz66jkrYWKExpvTMQX6EEIk_JeOS8kKjdGRirGL0QzY4gBM4bq6aUG1zo5nhF_6icr65OaWjkRWyva_SSG9K9g";
+    useEffect(() => {
+        const fetchStudentName = async () => {
+        try {
+        const response = await axios.get(
+          `/student/getStudent/${studentid}`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${TOKEN}`,
+              'Access-Control-Allow-Origin': '*',
+            },
+          }
+        )
+        if (response.data.code === 1000) {
+            const fetchedName = response.data.result.fullname;
+            setUserName(fetchedName);
+            console.log(userName);
+            console.log("successfull fetching");
+        }
+      } catch (error) {
+        console.error('Failed to fetch printing history:', error);
+      }
+    }
+
+    fetchStudentName();
+  }, [])
     return (
         <Box bg="#1488D8">
             <HStack 
@@ -31,7 +63,7 @@ const Header = () => {
                         </HStack>
                     </nav>
                     <AvatarGroup>
-                            <Avatar variant="solid" name="SampleUser" />
+                        <Avatar variant='solid' name={userName} />
                     </AvatarGroup>
                 </HStack>
             </HStack>
