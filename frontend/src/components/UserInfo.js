@@ -1,8 +1,9 @@
 import React from "react"
+import axios from 'axios'
 import MainLayout from "./MainLayout";
 import { Box, Text, VStack, HStack, Flex, Button } from '@chakra-ui/react';
 import { Avatar, AvatarGroup } from "./ui/avatar";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import { Link } from 'react-router-dom';
 
 
@@ -15,12 +16,12 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const UserInfo = () => {
     const [userData, setUserData] = useState(
         {
-            name: "Nguyen Van A",
+            /* name: "Nguyen Van A",
             id: "2211234",
             email: "a.nguyenvan@hcmut.edu.vn",
             department: "Khoa học và Kỹ thuật Máy tính",
             major: "Khoa học Máy tính",
-            class: "MT22KHT"
+            class: "MT22KHT" */
         }
     );
     const dataPrinting = {
@@ -44,6 +45,44 @@ const UserInfo = () => {
           },
         ],
       };
+// -------------------------------------- Fetch Data----------------------------------------------------------------
+const studentid = 4;
+const TOKEN = 
+"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXkubmd1eWVuMjkwMzIwMDQiLCJleHAiOjE3MzM3MjM2MzYsImlhdCI6MTczMzcyMDAzNiwianRpIjoiMTE0ZDQxMGYtYjc5Zi00M2EwLTg5ZDQtNzdiYTY5YmFiN2YyIiwic2NvcGUiOiJTVFVERU5UIn0.Qz66jkrYWKExpvTMQX6EEIk_JeOS8kKjdGRirGL0QzY4gBM4bq6aUG1zo5nhF_6icr65OaWjkRWyva_SSG9K9g";
+useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        const response = await axios.get(
+          `/student/getStudent/${studentid}`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${TOKEN}`,
+              'Access-Control-Allow-Origin': '*',
+            },
+          }
+        )
+        if (response.data.code === 1000) {
+            const transformedData = {
+                name: response.data.result.fullname,
+                id: response.data.result.mssv,
+                email: response.data.result.email,
+                department: response.data.result.nganh,
+                major: response.data.result.khoa,
+                balance: response.data.result.pages
+            };
+          console.log("successfull fetching");
+          setUserData(transformedData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch printing history:', error);
+      }
+    }
+
+    fetchStudentData();
+  }, [])
+// -------------------------------------- End Fetch Data----------------------------------------------------------------
+
     return (
         <MainLayout>
             <Box p={6} bg="#f0f4f8">
@@ -82,8 +121,8 @@ const UserInfo = () => {
                             <Text>{userData.major}</Text>
                             </HStack>
                             <HStack>
-                            <Text fontWeight="bold">Lớp:</Text>
-                            <Text>{userData.class}</Text>
+                            <Text fontWeight="bold">Số dư: </Text>
+                            <Text>{userData.balance}</Text>
                             </HStack>
                         </VStack>
                     </Box>
