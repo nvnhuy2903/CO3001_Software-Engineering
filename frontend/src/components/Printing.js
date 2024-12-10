@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import MainLayout from './MainLayout'
 import { FaSearch, FaUpload } from 'react-icons/fa'
 import PrinterConfig from './PrinterConfig'
@@ -11,6 +12,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.j
 const STUDENT_ID = localStorage.getItem('id')
 const TOKEN = localStorage.getItem('token')
 const PrintingRequestPage = () => {
+  const [printerId, setPrinterId] = useState('')
+  const [searchParams] = useSearchParams()
+
+  useEffect(() => {
+    setPrinterId(searchParams.get('printerId') || '')
+  }, [printerId])
+
   const [accountPages, setAccountBalancePages] = useState(0)
   useEffect(() => {
     const fetchAccountBalancePage = async () => {
@@ -32,8 +40,6 @@ const PrintingRequestPage = () => {
 
     fetchAccountBalancePage()
   }, [])
-
-  const [printerId, setPrinterId] = useState('')
 
   const [uploadedFile, setUploadedFile] = useState(null)
   const [originalTotalPages, setOriginalTotalPages] = useState(0)
