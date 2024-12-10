@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { 
   Box, 
   Flex, 
@@ -19,13 +19,11 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./ui/provider";
 import axios from "axios";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
 
 // Define all styles in a separate object
 const styles = {
@@ -236,9 +234,48 @@ const styles = {
       display: "none",
     },
   },
+  // dateGroup: {
+  //   mb: 6,
+  // },
+  dateHeader: {
+    position: "absolute",
+    top: "-12px",
+    left: "16px",
+    background: "#030391",
+    color: "white",
+    fontFamily: "VT323",
+    fontSize: "16px",
+    borderRadius: "4px",
+    padding: "0 8px", // Tạo khoảng cách hai bên
+  },
+};
+
+// Helper function to determine status color
+const getStatusColor = (type) => {
+  switch(type) {
+    case "buyPage":
+      return "green";
+    case "minusPage":
+      return "red";
+    default:
+      return "gray";
+  }
+};
+
+// Helper function to group items by date
+const groupByDate = (items, dateKey) => {
+  return items.reduce((groups, item) => {
+    const date = new Date((item[dateKey])).toLocaleDateString('en-GB');
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(item);
+    return groups;
+  }, {});
 };
 
 const AccountBalance = () => {
+
   // Chart data
   const chartData = {
     labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
@@ -304,49 +341,106 @@ const AccountBalance = () => {
     },
   };
 
-    const navigate = useNavigate();
-    const { authState } = useAuth();
-    const [studentData, setStudentData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
 
-    useEffect(() => {
-        const fetchStudentData = async () => {
-            try {
-                const response = await axios.get(`/student/getStudent/${authState.id}`);
-                console.log("response", response); // Debug
-                if (response.data.code === 1000) {
-                    setStudentData(response.data.result);
-                } else {
-                    setError("Không thể lấy thông tin sinh viên.");
-                }
-            } catch (err) {
-                console.error(err);
-                setError("Đã xảy ra lỗi khi lấy dữ liệu.");
-            } finally {
-                setLoading(false);
-            }
-        };
+  const navigate = useNavigate();
+  const { authState } = useAuth();
+  const [studentData, setStudentData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [amount, setAmount] = useState("");
 
-        if (authState.id) {
-            fetchStudentData();
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        const response = await axios.get(`/student/getStudent/${authState.id}`, {
+          headers: {
+            Authorization: `Bearer ${authState.token}`,
+          },
+        });
+        if (response.data.code === 1000) {
+          setStudentData(response.data.result);
+          setLoading(false);
         } else {
-            setError("Không tìm thấy student ID.");
-            setLoading(false);
-            navigate("/login");
+          setError("Không thể lấy thông tin sinh viên.");
         }
-    }, [authState.id, navigate]);
+      } catch (err) {
+        console.error(err);
+        setError("Đã xảy ra lỗi khi lấy dữ liệu.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (loading) {
-        return <Text>Đang tải...</Text>;
+    if (authState.token && authState.id) {
+      fetchStudentData();
+    } else {
+      setError("Không tìm thấy token hoặc student ID.");
+      setLoading(false);
+      navigate("/login");
+    }
+  }, [authState.token, authState.id, navigate]);
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) { // Only allow positive numbers
+      setAmount(value);
+    }
+  };
+
+  const handleBuyPages = async () => {
+    if (!amount || parseInt(amount) <= 0) {
+      setError("Vui lòng nhập số lượng trang hợp lệ.");
+      return;
     }
 
-    if (error) {
-        return <Text color="red.500">{error}</Text>;
+    try {
+      const response = await axios.post(`/transactions/pluspage/${authState.id}`, { amount }, {
+        headers: {
+          Authorization: `Bearer ${authState.token}`,
+        },
+      });
+      if (response.data.code === 1000) {
+        // Update student data or show success message
+        setStudentData(response.data.result);
+        setAmount("");
+      } else {
+        setError("Không thể mua thêm trang.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Đã xảy ra lỗi khi mua thêm trang.");
     }
+  };
+
+  if (loading) {
+    return <></>;
+  }
+
+  if (error) {
+    return <Text color="red.500">{error}</Text>;
+  }
+
+  if (!studentData || !studentData.account) {
+    window.location.reload();
+  }
+
+  const transactions = studentData.account.transactions ;
+  const printingRequests = studentData.printingRequests ;
+
+  const groupedTransactions = groupByDate(transactions, 'date');
+  const groupedPrintingRequests = groupByDate(printingRequests, 'createdAt');
+
+  const sortedTransactionDates = Object.keys(groupedTransactions).sort(
+    (a, b) => new Date(b) - new Date(a)
+  );
+
+  const sortedPrintingDates = Object.keys(groupedPrintingRequests).sort(
+    (a, b) => new Date(b) - new Date(a)
+  );
 
   return (
     <MainLayout>
+      {error && <Text color="red.500">{error}</Text>}
       <Grid templateColumns="repeat(2, 1fr)" bg={styles.container.bg} gap={6}>
         {/* Left Column */}
         <Box {...styles.leftColumnBox}>
@@ -391,7 +485,7 @@ const AccountBalance = () => {
                   Số trang hiện có:
                 </Text>
                 <Text {...styles.infoText}>
-                  42 trang
+                  {studentData.pages} trang
                 </Text>
               </Flex>
 
@@ -411,7 +505,9 @@ const AccountBalance = () => {
                   Số trang đã mua:
                 </Text>
                 <Text {...styles.infoText}>
-                  50 trang
+                  {transactions
+                    .filter(t => t.type === "buyPage")
+                    .reduce((sum, t) => sum + t.amount, 0)} trang
                 </Text>
               </Flex>
 
@@ -433,11 +529,43 @@ const AccountBalance = () => {
                   Mua thêm:
                 </Text>
                 <Box>
-                  <Input
+                <Input
                     placeholder="5"
-                    {...styles.inputStyle}
+                    value={amount}
+                    onChange={handleInputChange}
+                    style={{
+                      width: "60px",
+                      marginRight: "8px",
+                      backgroundColor: "blue.50",
+                      borderColor: "blue.300",
+                      borderRadius: "6px",
+                      paddingTop: "4px",
+                      paddingBottom: "4px",
+                      color: "#030391",
+                      fontFamily: "VT323",
+                      fontSize: "24px",
+                      textAlign: "center",
+                      height: "24px",
+                    }}
                   />
-                  <Button {...styles.buyButton}>
+                  <Button 
+                    onClick={handleBuyPages}
+                    disabled={!amount || parseInt(amount) <= 0}
+                    style={{
+                      color: "white",
+                      fontFamily: "VT323",
+                      backgroundColor: "#1488D8",
+                      borderRadius: "24px",
+                      paddingTop: "4px",
+                      paddingBottom: "4px",
+                      fontSize: "24px",
+                      height: "24px",
+                      marginTop: "-8px",
+                      _hover: {
+                        backgroundColor: "#126bb3",
+                      },
+                    }}
+                  >
                     Mua
                   </Button>
                 </Box>
@@ -460,179 +588,131 @@ const AccountBalance = () => {
 
         {/* Right Column */}
         <Box {...styles.rightColumnBox}>
-          <RightColumn />
+          <RightColumn
+            groupedTransactions={groupedTransactions}
+            sortedTransactionDates={sortedTransactionDates}
+            groupedPrintingRequests={groupedPrintingRequests}
+            sortedPrintingDates={sortedPrintingDates}
+          />
         </Box>
       </Grid>
     </MainLayout>
   );
 };
 
-
-
-const RightColumn = () => {
+const RightColumn = ({
+  groupedTransactions,
+  sortedTransactionDates,
+  groupedPrintingRequests,
+  sortedPrintingDates,
+}) => {
   const navigate = useNavigate();
+
   return (
     <Box>
       {/* Transaction History */}
-        <Box {...styles.transactionHistoryContainer}>
-          {/* Inner white button */}
-          <Button {...styles.transactionButton} onClick={() => navigate("/transaction/logTrans")}>
-            Xem lịch sử giao dịch
-          </Button>
-        </Box>
+      <Box {...styles.transactionHistoryContainer}>
+        <Button
+          {...styles.transactionButton}
+          onClick={() => navigate("/transaction/logTrans")}
+        >
+          Xem lịch sử giao dịch
+        </Button>
+      </Box>
 
-        <Box {...styles.scrollableContainer}>
-          <TransactionItem
-            date="07/10/2024"
-            transactions={[
-              { pages: "+50", time: "10:32:45", remaining: "64" },
-              { pages: "-30", time: "10:20:32", remaining: "14" },
-              { pages: "+10", time: "07:57:13", remaining: "24" },
-              { pages: "-56", time: "07:33:21", remaining: "34" },
-            ]}
-          />
-          <TransactionItem
-            date="06/10/2024"
-            transactions={[
-              { pages: "-25", time: "16:11:56", remaining: "90" },
-            ]}
-          />
-        </Box>
+      <Box {...styles.scrollableContainer}>
+        {sortedTransactionDates.map((date) => (
+          <Box key={date} color="blue" border="2px solid #030391" borderRadius="8px" position="relative" mb={6}>
+            {/* Date Header */}
+            <Text {...styles.dateHeader}>Ngày {date}</Text>
 
-      <Box>
-      {/* Transaction History */}
-      <Box {...styles.transactionHistoryContainer} onClick={() => navigate("/service/logPrinting")}>
-        {/* Inner white button */}
-        <Button {...styles.transactionButton}>
+            {/* Grouped Transactions */}
+            <Box {...styles.groupContainer} p={3}>
+              {groupedTransactions[date]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map((transaction) => (
+                  <TransactionItem key={transaction.id} data={transaction} />
+                ))}
+            </Box>
+          </Box>
+        ))}
+      </Box>
+
+
+      {/* Print History */}
+      <Box {...styles.transactionHistoryContainer}>
+        <Button
+          {...styles.transactionButton}
+          onClick={() => navigate("/service/logPrinting")}
+        >
           Xem lịch sử in
         </Button>
       </Box>
-    </Box>
 
-      {/* Print History */}
       <Box {...styles.scrollableContainer}>
-        <PrintItem
-          date="07/10/2024" 
-          prints={[
-            { icon: "W", name: "filename.docx", time: "15:20:34", status: "Đang xử lý", statusColor: "orange" },
-            { icon: "PDF", name: "filename.docx", time: "13:56:28", status: "Thành công", statusColor: "green" },
-            { icon: "PDF", name: "filename.docx", time: "10:45:07", status: "Thất bại", statusColor: "red" },
-            { icon: "X", name: "filename.xlsx", time: "07:32:46", status: "Thành công", statusColor: "green" },
-          ]}
-        />
-        <PrintItem
-          date="06/10/2024"
-          prints={[
-            { icon: "PPT", name: "filename.docx", time: "16:49:32", status: "Thành công", statusColor: "green" },
-          ]}
-        />
-      </Box>
+        {sortedPrintingDates.map((date) => (
+          <Box key={date} color="blue" border="2px solid #030391" borderRadius="8px" position="relative" mb={6}>
+            {/* Date Header */}
+            <Text {...styles.dateHeader}>Ngày {date}</Text>
 
+            {/* Grouped Transactions */}
+            <Box {...styles.groupContainer} p={3}>
+              {groupedPrintingRequests[date]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .map((request) => (
+                  <PrintItem key={request.id} data={request} />
+                ))}
+            </Box>
+          </Box>
+        ))}
+      </Box>
     </Box>
   );
 };
 
+
+
 // Transaction Item Component
-const TransactionItem = ({ date, transactions }) => (
+const TransactionItem = ({ data }) => (
   <Box
-    position="relative" // Bật chế độ định vị tương đối
-    border="1px solid #030391"
-    borderRadius="8px"
-    p={3}
-    mb={4}
-    bg="#F5F9FF"
+    pl={3}
+    pr={3}
   >
-    {/* Date Header */}
-    <Box
-      position="absolute" // Đặt tiêu đề chồng lên viền
-      top="-12px"
-      left="16px"
-      bg="#030391"
-      color="white"
-      fontFamily="VT323"
-      fontSize="16px"
-      //p="2px 8px"
-      borderRadius="4px"
-    >
-      Ngày {date}
-    </Box>
-
-    {/* Transactions */}
-    {transactions.map((transaction, index) => (
-      <Box
-        key={index}
-        borderBottom={index < transactions.length - 1 ? "1px dashed #030391" : "none"}
-        pb={0} 
-        mt={0.} 
-      >
-        <Flex justifyContent="space-between" fontFamily="VT323" fontSize="28px" lineHeight="1.2">
-          <Text color={transaction.pages.startsWith("+") ? "green" : "red"}>
-            {transaction.pages} trang
-          </Text>
-          <Text color="#030391">vào lúc</Text>
-          <Text color="#030391">{transaction.time}</Text>
-        </Flex>
-        <Flex justifyContent="space-between" fontSize="22px" fontFamily="VT323" color="#666666" mt={-1}>
-          <Text>Số trang dư:</Text>
-          <Text textAlign="right">{transaction.remaining}</Text>
-        </Flex>
-      </Box>
-    ))}
-
+    <Flex justifyContent="space-between" fontFamily="VT323" fontSize="26px" lineHeight="1.2">
+      <Text color={getStatusColor(data.type)}>
+      {data.type === "buyPage" ? `+${data.amount}` : data.type === "minusPage" ? `-${data.amount}` : "Unknown"} trang
+      </Text>
+      <Text color="#030391">Vào lúc</Text>
+      {new Date(data.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+      </Flex>
+    <Flex justifyContent="space-between" fontSize="22px" fontFamily="VT323" color="#666666" mt={-1}>
+      <Text>Số trang dư:</Text>
+      <Text textAlign="right">{data.balanceAfter} trang</Text>
+    </Flex>
   </Box>
 );
 
 
-
-
-const PrintItem = ({ date, prints }) => (
+// Print Item Component
+const PrintItem = ({ data }) => (
   <Box
-    position="relative" // Định vị tương đối để thêm tiêu đề
-    border="1px solid #030391"
-    borderRadius="8px"
-    p={3}
-    mb={4}
-    bg="#EAF6FF"
+    pl={3}
+    pr={3}
   >
-    {/* Date Header */}
-    <Box
-      position="absolute" // Đặt tiêu đề chồng lên viền
-      top="-12px"
-      left="16px"
-      bg="#030391"
-      color="white"
-      fontFamily="VT323"
-      fontSize="16px"
-      borderRadius="4px"
-    >
-      Ngày {date}
-    </Box>
-
-    {/* Prints */}
-    {prints.map((print, index) => (
-      <Box
-        key={index}
-        borderBottom={index < prints.length - 1 ? "1px dashed #030391" : "none"}
-        // pb={2}
-        // mt={2}
-      >
-        <Flex justifyContent="space-between" fontFamily="VT323" fontSize="28px" lineHeight="1.2">
-          <Text color="#030391">
-            <span style={{ fontWeight: "bold" }}>{print.icon}</span> {print.name}
-          </Text>
-          <Text color="#030391">{print.time}</Text>
-        </Flex>
-        <Flex justifyContent="space-between" fontSize="22px" fontFamily="VT323" color="#666666" mt={-1}>
-          <Text>Trạng thái:</Text>
-          <Text color={print.statusColor} textAlign="right">
-            {print.status}
-          </Text>
-        </Flex>
-      </Box>
-    ))}
+    <Flex justifyContent="space-between" fontFamily="VT323" fontSize="26px" lineHeight="1.2">
+      <Text color="#030391">
+        <span style={{ fontWeight: "bold" }}>{data.fileType === "application/pdf" ? "PDF" : data.fileType}</span> {data.fileName}
+      </Text>
+      {new Date(data.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+      </Flex>
+    <Flex justifyContent="space-between" fontSize="22px" fontFamily="VT323" color="#666666" mt={-1}>
+      <Text>Trạng thái:</Text>
+      <Text color="green">
+        Thành công
+      </Text>
+    </Flex>
   </Box>
 );
-
 
 
 export default AccountBalance;

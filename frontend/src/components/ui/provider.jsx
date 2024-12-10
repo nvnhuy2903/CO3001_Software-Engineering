@@ -35,6 +35,7 @@ export function Provider({ children }) {
     formData.append('password', password);
 
     const response = await axios.post('/auth/check', formData);
+    console.log("responsesss", response.data);
     if (response.data.result.token) {
       const token = response.data.result.token;
       const id = response.data.result.id;

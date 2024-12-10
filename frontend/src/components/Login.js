@@ -27,9 +27,11 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            console.log(credentials);
             await login(credentials.username, credentials.password);
             navigate("/homepage");
         } catch (err) {
+            console.error(err);
             setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
         }
     };
