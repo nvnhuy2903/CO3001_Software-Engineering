@@ -8,10 +8,8 @@ import * as pdfjsLib from 'pdfjs-dist/webpack'
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
 
-const STUDENT_ID = 4
-const TOKEN =
-  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXkubmd1eWVuMjkwMzIwMDQiLCJleHAiOjE3MzM4MDE3NTIsImlhdCI6MTczMzc5ODE1MiwianRpIjoiMzJlZTUyMWUtM2MzYy00YWY3LTlmNWQtZjZjOWE0OWUzYzE1Iiwic2NvcGUiOiJTVFVERU5UIn0.W5qj8lrSzy48LuSZPibHYT6Lwc2OI3PZZ0WlWssJiPoJ6ZAPiakL_crot7_UTeqV2PjpXt00fkd_0LCddKvE0w'
-
+const STUDENT_ID = localStorage.getItem('id')
+const TOKEN = localStorage.getItem('token')
 const PrintingRequestPage = () => {
   const [accountPages, setAccountBalancePages] = useState(0)
   useEffect(() => {
@@ -41,6 +39,7 @@ const PrintingRequestPage = () => {
   const [originalTotalPages, setOriginalTotalPages] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [buyPages, setBuyPages] = useState(0)
+  const [amount, setAmount] = useState('')
 
   const [configuration, setConfiguration] = useState({
     color: true,
@@ -163,6 +162,35 @@ const PrintingRequestPage = () => {
 
   const handlePrinterSearch = () => {
     window.location.href = '/service'
+  }
+
+  const handleBuyPages = async () => {
+    if (!amount || parseInt(amount) <= 0) {
+      alert('Vui lòng nhập số lượng trang hợp lệ.')
+      return
+    }
+
+    try {
+      const response = await axios.post(
+        `/transactions/pluspage/${STUDENT_ID}`,
+        { amount },
+        {
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        }
+      )
+      if (response.data.code === 1000) {
+        // Update student data or show success message
+        alert(`Mua thêm ${amount} trang thành công !`)
+        setAmount('')
+      } else {
+        alert('Không thể mua thêm trang.')
+      }
+    } catch (err) {
+      console.error(err)
+      alert('Đã xảy ra lỗi khi mua thêm trang.')
+    }
   }
 
   const handleSubmitRequest = async () => {
@@ -398,6 +426,10 @@ const PrintingRequestPage = () => {
                           ? totalPages - accountPages
                           : 0
                       }
+                      value={amount}
+                      onChange={(e) =>
+                        setAmount(e.target.value < 0 ? 0 : e.target.value)
+                      }
                       placeholder="0"
                       style={{
                         backgroundColor: '#fff',
@@ -411,7 +443,7 @@ const PrintingRequestPage = () => {
                       }}
                     />
                     <button
-                      onClick={() => (window.location.href = '/transaction')}
+                      onClick={() => handleBuyPages(amount)}
                       style={{
                         backgroundColor: '#1488d8',
                         color: 'white',
