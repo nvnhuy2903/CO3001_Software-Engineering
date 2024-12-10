@@ -55,6 +55,20 @@ const LogPrinting = () => {
           }
         )
         if (response.data.code === 1000) {
+          // Reset data
+          mockData = {
+            printingHistory: [],
+            printingStats: {
+              successfulPrints: 0,
+              totalPages: 0,
+              lastPrintTime: '2000-00-00T00:00:00',
+              fileTypeBreakdown: {
+                doc: 0,
+                pdf: 0,
+                img: 0,
+              },
+            },
+          }
           mockData['printingHistory'] = response.data.result
           var updatedHistory = response.data.result.map((row) => {
             let createdAtDate = new Date(row.createdAt) // Parse createdAt to Date object
@@ -188,7 +202,6 @@ const LogPrinting = () => {
 
   // Function to truncate file name
   const truncateFileName = (fileName, maxLength = 30) => {
-    console.log(fileName.length)
     if (fileName.length <= maxLength) return fileName
     const extensionIndex = fileName.lastIndexOf('.')
     const extension = fileName.slice(extensionIndex) // Get file extension
