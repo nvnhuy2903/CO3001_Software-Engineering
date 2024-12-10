@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Heading, Icon, Stack, VStack, Text } from '@chakra-ui/react'
+import '../App.css';
 import {
   AccordionItem,
   AccordionItemContent,
@@ -36,13 +37,13 @@ const SideBar = (props) => {
           </AccordionItemTrigger>
           <AccordionItemContent color="#030391">
             <VStack>
-              <Link to="/homepage" className="nav-item">
+              <Link to="/homepage" className="nav-item hover-sideBar">
                 Thông tin
               </Link>
-              <Link to="/homepage/report" className="nav-item">
+              <Link to="/homepage/report" className="nav-item hover-sideBar">
                 Báo cáo
               </Link>
-              <Link to="/homepage/logout" className="nav-item">
+              <Link to="/homepage/logout" className="nav-item hover-sideBar">
                 Đăng xuất
               </Link>
             </VStack>
@@ -59,13 +60,13 @@ const SideBar = (props) => {
           </AccordionItemTrigger>
           <AccordionItemContent color="#030391">
             <VStack>
-              <Link to="/service" className="nav-item">
+              <Link to="/service" className="nav-item hover-sideBar">
                 Tìm kiếm máy
               </Link>
-              <Link to="/print" className="nav-item">
+              <Link to="/print" className="nav-item hover-sideBar">
                 Yêu cầu in
               </Link>
-              <Link to="/service/logPrinting" className="nav-item">
+              <Link to="/service/logPrinting" className="nav-item hover-sideBar">
                 Lịch sử in
               </Link>
             </VStack>
@@ -82,10 +83,10 @@ const SideBar = (props) => {
           </AccordionItemTrigger>
           <AccordionItemContent color="#030391">
             <VStack>
-              <Link to="/transaction" className="nav-item">
+              <Link to="/transaction" className="nav-item hover-sideBar">
                 Số dư tài khoản
               </Link>
-              <Link to="/transaction/logTrans" className="nav-item">
+              <Link to="/transaction/logTrans" className="nav-item hover-sideBar">
                 Lịch sử mua
               </Link>
             </VStack>
