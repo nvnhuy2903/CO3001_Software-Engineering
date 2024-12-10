@@ -33,7 +33,7 @@
   border-radius: 32px;
   input {
     background-color: #fff;
-    color: #757575;
+    color: #030391;
     padding: 8px;
     border-radius: 12px;
     width: 90%;
@@ -81,6 +81,7 @@
       margin-left: 12px;
       background-color: '#fff';
       border: 1px solid #030391;
+      color: #030391;
     }
 
     input.inputNumber:disabled {
@@ -102,6 +103,7 @@
       input {
         width: fit-content;
         margin-right: 12px;
+        color: #030391 !important;
       }
       select {
         margin-left: 18px;

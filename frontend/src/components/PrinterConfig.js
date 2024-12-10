@@ -113,7 +113,7 @@ const PrinterConfig = ({ config, onConfigChange, totalPages }) => {
           <input
             className="inputNumber"
             type="text"
-            placeholder={`1-${totalPages ?? 20}`}
+            placeholder={`1-${totalPages ? totalPages : 20}`}
             value={config.customRange}
             onChange={(e) => handleInputChange('customRange', e.target.value)}
             disabled={config.range !== 'custom'}

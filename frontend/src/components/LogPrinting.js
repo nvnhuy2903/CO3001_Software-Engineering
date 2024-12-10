@@ -27,7 +27,7 @@ var mockData = {
 const BASE_URL = ''
 const STUDENT_ID = 4
 const TOKEN =
-  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0dWFuLm5ndXllbmtobXRrMjIiLCJleHAiOjE3MzM2ODE0MjUsImlhdCI6MTczMzY3NzgyNSwianRpIjoiZTc1ZmUyZDYtNDhhOC00MmJjLTljNDAtY2JlYWQ0YjMwNWIxIiwic2NvcGUiOiJTVFVERU5UIn0.iUNbYLO6Jvx25qmXohvPwmyMKwU8QmHvGV_AnrhM8zD8C3iPpoApWdV2ZnCl4brPsRZXSmMG56sKM_5aKJXi9Q'
+  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXkubmd1eWVuMjkwMzIwMDQiLCJleHAiOjE3MzM4MDE3NTIsImlhdCI6MTczMzc5ODE1MiwianRpIjoiMzJlZTUyMWUtM2MzYy00YWY3LTlmNWQtZjZjOWE0OWUzYzE1Iiwic2NvcGUiOiJTVFVERU5UIn0.W5qj8lrSzy48LuSZPibHYT6Lwc2OI3PZZ0WlWssJiPoJ6ZAPiakL_crot7_UTeqV2PjpXt00fkd_0LCddKvE0w'
 const LogPrinting = () => {
   const [history, setHistory] = useState(mockData.printingHistory)
   const [statistics, setStats] = useState(mockData.printingStats)
@@ -122,6 +122,20 @@ const LogPrinting = () => {
         )
       })
       .sort((a, b) => {
+        if (sortField === 'startTime' || sortField === 'endTime') {
+          const dateA = new Date(a[sortField])
+          const dateB = new Date(b[sortField])
+
+          // Convert to a format that can be compared (milliseconds since the epoch)
+          const aTime = dateA.getTime()
+          const bTime = dateB.getTime()
+
+          // Perform sorting based on the order: year -> month -> date -> AM/PM -> hours -> minutes -> seconds
+          if (aTime < bTime) return sortDirection === 'asc' ? -1 : 1
+          if (aTime > bTime) return sortDirection === 'asc' ? 1 : -1
+
+          return 0
+        }
         if (a[sortField] < b[sortField]) return sortDirection === 'asc' ? -1 : 1
         if (a[sortField] > b[sortField]) return sortDirection === 'asc' ? 1 : -1
         return 0

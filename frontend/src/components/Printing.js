@@ -10,7 +10,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.j
 
 const STUDENT_ID = 4
 const TOKEN =
-  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXkubmd1eWVuMjkwMzIwMDQiLCJleHAiOjE3MzM3OTcxNzcsImlhdCI6MTczMzc5MzU3NywianRpIjoiYmY1ZTE0NTQtNDczZi00OWFiLTkyNmItNTRhZTQxOTNmN2IxIiwic2NvcGUiOiJTVFVERU5UIn0.L0aSb1aNbRhdFXEL2bFSySqouVR7bE1reUCJwPwcVfiapTJVMllbTU0trHFoFQuy3Xr5yTonfgv6cgUb7mJCLw'
+  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXkubmd1eWVuMjkwMzIwMDQiLCJleHAiOjE3MzM4MDE3NTIsImlhdCI6MTczMzc5ODE1MiwianRpIjoiMzJlZTUyMWUtM2MzYy00YWY3LTlmNWQtZjZjOWE0OWUzYzE1Iiwic2NvcGUiOiJTVFVERU5UIn0.W5qj8lrSzy48LuSZPibHYT6Lwc2OI3PZZ0WlWssJiPoJ6ZAPiakL_crot7_UTeqV2PjpXt00fkd_0LCddKvE0w'
+
 const PrintingRequestPage = () => {
   const [accountPages, setAccountBalancePages] = useState(0)
   useEffect(() => {
@@ -98,7 +99,7 @@ const PrintingRequestPage = () => {
 
     // 1. Handle 'range' changes
     if (range === 'current') {
-      pages = 1
+      pages = totalPages > 0 ? 1 : 0
     } else if (range === 'custom' && customRange) {
       const customPageCount = calculateCustomRangePages(
         customRange,
@@ -164,19 +165,42 @@ const PrintingRequestPage = () => {
     window.location.href = '/service'
   }
 
-  const handleSubmitRequest = () => {
+  const handleSubmitRequest = async () => {
     // Send print request to SPSO management system
     if (!printerId || !uploadedFile) {
       alert('Please fill in all mandatory fields!')
       return
     }
-    const printRequest = {
-      printerId,
-      file: uploadedFile.name,
-      configuration,
+
+    // Create FormData object for multipart/form-data request
+    const formData = new FormData()
+    formData.append('file', uploadedFile)
+    formData.append('typePaper', configuration.paperSize || 'A4') // Default to A4
+    formData.append('copies', configuration.copies || 1)
+    formData.append('somat', totalPages || 1) // Total pages to be printed
+    console.log(formData)
+    try {
+      const url = `/printingRequest/create/${STUDENT_ID}/${printerId}`
+
+      const response = await axios.post(url, formData, {
+        headers: {
+          Authorization: `Bearer ${TOKEN}`,
+          'Content-Type': 'multipart/form-data',
+          'Access-Control-Allow-Origin': '*',
+        },
+      })
+
+      if (response.status === 200) {
+        alert('Print Request Submitted Successfully!')
+        // console.log('Response:', response.data)
+      } else {
+        alert('Failed to submit print request.')
+        // console.error('Error Response:', response.data)
+      }
+    } catch (error) {
+      alert('An error occurred while submitting the print request.')
+      console.error('Error:', error)
     }
-    console.log('Submitting Print Request:', printRequest)
-    alert('Print Request Submitted Successfully!')
   }
 
   return (
@@ -374,6 +398,7 @@ const PrintingRequestPage = () => {
                           ? totalPages - accountPages
                           : 0
                       }
+                      placeholder="0"
                       style={{
                         backgroundColor: '#fff',
                         color: '#030391',
