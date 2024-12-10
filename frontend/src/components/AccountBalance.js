@@ -22,6 +22,8 @@ import { Bar } from "react-chartjs-2";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./ui/provider";
 import axios from "axios";
+import { FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileAlt, FaFileImage } from 'react-icons/fa';
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -259,6 +261,23 @@ const getStatusColor = (type) => {
       return "red";
     default:
       return "gray";
+  }
+};
+
+const getFileIcon = (fileType) => {
+  switch (fileType) {
+    case 'application/pdf':
+      return <FaFilePdf color="red" />;
+    case 'application/word':
+    case 'application/document':
+      return <FaFileWord color="blue" />;
+    case 'application/pptx':
+    case 'application/presentation':
+      return <FaFilePowerpoint color="orange" />;
+    case 'png':
+        return <FaFileImage color="green" />;
+    default:
+      return <FaFileAlt color="gray" />;
   }
 };
 
@@ -695,21 +714,21 @@ const TransactionItem = ({ data }) => (
 
 // Print Item Component
 const PrintItem = ({ data }) => (
-  <Box
-    pl={3}
-    pr={3}
-  >
-    <Flex justifyContent="space-between" fontFamily="VT323" fontSize="26px" lineHeight="1.2">
-      <Text color="#030391">
-        <span style={{ fontWeight: "bold" }}>{data.fileType === "application/pdf" ? "PDF" : data.fileType}</span> {data.fileName}
-      </Text>
-      {new Date(data.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+  <Box pl={3} pr={3}>
+    <Flex justifyContent="space-between" alignItems="center" fontFamily="VT323" fontSize="26px" lineHeight="1.2">
+      <Flex alignItems="center">
+        {getFileIcon(data.fileType)}
+        <Text color="#030391" ml={2}>
+          {data.fileName}
+        </Text>
       </Flex>
+      <Text color="#030391">
+        {new Date(data.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+      </Text>
+    </Flex>
     <Flex justifyContent="space-between" fontSize="22px" fontFamily="VT323" color="#666666" mt={-1}>
       <Text>Trạng thái:</Text>
-      <Text color="green">
-        Thành công
-      </Text>
+      <Text color="green">Thành công</Text>
     </Flex>
   </Box>
 );
