@@ -8,6 +8,8 @@ import { FaSearch } from 'react-icons/fa'
 import { FaSort } from 'react-icons/fa6'
 import { FaSortUp } from 'react-icons/fa6'
 import { FaSortDown } from 'react-icons/fa6'
+import { FaFilePdf, FaFileImage } from 'react-icons/fa'
+import { IoIosDocument } from 'react-icons/io'
 import './LogPrinting.css'
 
 var mockData = {
@@ -25,9 +27,9 @@ var mockData = {
 }
 
 const BASE_URL = ''
-const STUDENT_ID = 4
-const TOKEN =
-  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXkubmd1eWVuMjkwMzIwMDQiLCJleHAiOjE3MzM4MDE3NTIsImlhdCI6MTczMzc5ODE1MiwianRpIjoiMzJlZTUyMWUtM2MzYy00YWY3LTlmNWQtZjZjOWE0OWUzYzE1Iiwic2NvcGUiOiJTVFVERU5UIn0.W5qj8lrSzy48LuSZPibHYT6Lwc2OI3PZZ0WlWssJiPoJ6ZAPiakL_crot7_UTeqV2PjpXt00fkd_0LCddKvE0w'
+const STUDENT_ID = localStorage.getItem('id')
+const TOKEN = localStorage.getItem('token')
+
 const LogPrinting = () => {
   const [history, setHistory] = useState(mockData.printingHistory)
   const [statistics, setStats] = useState(mockData.printingStats)
@@ -58,7 +60,7 @@ const LogPrinting = () => {
             let createdAtDate = new Date(row.createdAt) // Parse createdAt to Date object
             row.startTime = createdAtDate.toLocaleString()
 
-            row.updateAtDate = new Date(createdAtDate.getTime() + 10000) // Add 10 seconds
+            row.updateAtDate = new Date(createdAtDate.getTime() + 30000) // Add 30 seconds
 
             // Compare endTime with the current time
             if (row.updateAtDate < new Date()) {
@@ -184,6 +186,34 @@ const LogPrinting = () => {
     ],
   }
 
+  // Function to truncate file name
+  const truncateFileName = (fileName, maxLength = 30) => {
+    console.log(fileName.length)
+    if (fileName.length <= maxLength) return fileName
+    const extensionIndex = fileName.lastIndexOf('.')
+    const extension = fileName.slice(extensionIndex) // Get file extension
+    const nameWithoutExtension = fileName.slice(0, extensionIndex) // Get file name without extension
+
+    // Show first 6 chars and last 6 chars of the name (can be adjusted)
+    const start = nameWithoutExtension.slice(0, 15)
+    const end = nameWithoutExtension.slice(-(12 - extension.length)) //
+
+    return `${start}...${end}${extension}`
+  }
+
+  // Function to select the appropriate file icon
+  const getFileIcon = (fileName) => {
+    if (fileName.includes('.pdf'))
+      return <FaFilePdf style={{ marginRight: '8px' }} />
+    if (
+      fileName.includes('.jpg') ||
+      fileName.includes('.jpeg') ||
+      fileName.includes('.png')
+    )
+      return <FaFileImage style={{ marginRight: '8px' }} />
+    return <IoIosDocument style={{ marginRight: '8px' }} />
+  }
+
   return (
     <MainLayout>
       <div className="log-printing">
@@ -290,7 +320,10 @@ const LogPrinting = () => {
         <table className="printing-table">
           <thead>
             <tr>
-              <th onClick={() => handleSort('fileName')}>
+              <th
+                onClick={() => handleSort('fileName')}
+                style={{ width: '20%' }}
+              >
                 <p> Tên file {getSortIndicator('fileName')} </p>
               </th>
               <th onClick={() => handleSort('fileSize')}>
@@ -336,7 +369,19 @@ const LogPrinting = () => {
               currentRows.map((row, index) => (
                 <tr key={index}>
                   {/* <td>{row.id}</td> */}
-                  <td>{row.fileName} </td>
+                  <td>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                      }}
+                    >
+                      {getFileIcon(row.fileName)}
+                      {truncateFileName(row.fileName)}
+                    </div>
+                  </td>
+
                   <td style={{ textAlign: 'center' }}>
                     {(row.fileSize / 1024 ** 2).toFixed(2)}MB
                   </td>
