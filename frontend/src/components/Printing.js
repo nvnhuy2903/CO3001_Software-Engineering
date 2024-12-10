@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import MainLayout from './MainLayout'
-import { FaSearch, FaUpload } from 'react-icons/fa'
+import { FaSearch, FaUpload, FaSpinner } from 'react-icons/fa'
 import PrinterConfig from './PrinterConfig'
 import './Printing.css'
 import axios from 'axios'
@@ -14,6 +14,8 @@ const TOKEN = localStorage.getItem('token')
 const PrintingRequestPage = () => {
   const [printerId, setPrinterId] = useState('')
   const [searchParams] = useSearchParams()
+
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     setPrinterId(searchParams.get('printerId') || '')
@@ -212,10 +214,10 @@ const PrintingRequestPage = () => {
     formData.append('typePaper', configuration.paperSize || 'A4') // Default to A4
     formData.append('copies', configuration.copies || 1)
     formData.append('somat', totalPages || 1) // Total pages to be printed
-    console.log(formData)
+    // console.log(formData)
     try {
+      setIsLoading(true)
       const url = `/printingRequest/create/${STUDENT_ID}/${printerId}`
-
       const response = await axios.post(url, formData, {
         headers: {
           Authorization: `Bearer ${TOKEN}`,
@@ -289,7 +291,7 @@ const PrintingRequestPage = () => {
                 >
                   <input
                     type="text"
-                    value={printerId}
+                    defaultValue={printerId}
                     onChange={(e) => setPrinterId(e.target.value)}
                     placeholder="Nhập ID của máy in *"
                   />
@@ -402,15 +404,23 @@ const PrintingRequestPage = () => {
                     )}
                   </div>
                 ) : (
-                  <p
+                  <div
                     style={{
-                      color: '#666',
-                      fontSize: '32px',
-                      textAlign: 'center',
+                      height: '100%',
+                      backgroundColor: '#e7e7e7',
                     }}
                   >
-                    Chưa đăng tải file
-                  </p>
+                    <p
+                      style={{
+                        margin: 'auto',
+                        color: '#666',
+                        fontSize: '32px',
+                        textAlign: 'center',
+                      }}
+                    >
+                      Chưa đăng tải file
+                    </p>
+                  </div>
                 )}
               </div>
               <div className="submitPreview">
@@ -472,14 +482,26 @@ const PrintingRequestPage = () => {
               >
                 <button
                   onClick={handleSubmitRequest}
+                  disabled={isLoading}
                   style={{
-                    backgroundColor: '#1488d8',
+                    backgroundColor: isLoading ? '#a0a0a0' : '#1488d8',
                     color: 'white',
                     padding: '8px',
                     borderRadius: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  Gửi yêu cầu
+                  {isLoading ? (
+                    <>
+                      <FaSpinner className="spinner" />
+                      Đang gửi...
+                    </>
+                  ) : (
+                    'Gửi yêu cầu'
+                  )}
                 </button>
               </div>
             </div>

@@ -10,7 +10,7 @@
   color: #030391;
   input {
     background-color: #fff;
-    color: #757575;
+    color: #030391;
     padding: 8px;
     border-radius: 12px;
     width: 90%;
@@ -159,4 +159,17 @@
 
 .rightSection button:hover {
   background-color: #030391 !important;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+button.spinner {
+  animation: spin 1s linear infinite;
 }
