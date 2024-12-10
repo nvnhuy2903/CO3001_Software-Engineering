@@ -8,14 +8,13 @@ import '../App.css';
 
 const Header = () => {
     const [userName, setUserName] = useState('');
-    const studentid = 4;
-    const TOKEN = 
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJodXkubmd1eWVuMjkwMzIwMDQiLCJleHAiOjE3MzM3MjM2MzYsImlhdCI6MTczMzcyMDAzNiwianRpIjoiMTE0ZDQxMGYtYjc5Zi00M2EwLTg5ZDQtNzdiYTY5YmFiN2YyIiwic2NvcGUiOiJTVFVERU5UIn0.Qz66jkrYWKExpvTMQX6EEIk_JeOS8kKjdGRirGL0QzY4gBM4bq6aUG1zo5nhF_6icr65OaWjkRWyva_SSG9K9g";
+    const STUDENT_ID = localStorage.getItem('id');
+    const TOKEN = localStorage.getItem('token');
     useEffect(() => {
         const fetchStudentName = async () => {
         try {
         const response = await axios.get(
-          `/student/getStudent/${studentid}`,
+          `/student/getStudent/${STUDENT_ID}`,
           {
             withCredentials: true,
             headers: {
