@@ -1,14 +1,14 @@
 import React from "react"
 import SecondLayout from "./SecondLayout";
 import { Box, Button, Heading, Text, Image } from '@chakra-ui/react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
-    /* const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const handleClick = () => {
-      navigate('/new-page'); // Change to the path you want to navigate to
-    }; */
+      navigate('/login'); // Change to the path you want to navigate to
+    }; 
     return (
         <SecondLayout>
             <Box textAlign="center" p={10}>
@@ -29,7 +29,7 @@ const LandingPage = () => {
                 </Heading>
                 <Button bg="rgba(20, 136, 216, 1)" 
                 color="white" fontFamily="Coiny" borderRadius="xl" size="lg"
-                /* onClick={handleClick} */>
+                 onClick={handleClick} >
                     Đăng nhập ngay
                 </Button>
             </Box>
