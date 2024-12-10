@@ -23,7 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "./ui/provider";
 import axios from "axios";
 import { FaFilePdf, FaFileWord, FaFilePowerpoint, FaFileAlt, FaFileImage } from 'react-icons/fa';
-
+import { Spinner, Center } from '@chakra-ui/react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -281,6 +281,13 @@ const getFileIcon = (fileType) => {
   }
 };
 
+const truncateFileName = (fileName, maxLength) => {
+  if (fileName.length > maxLength) {
+    return fileName.substring(0, maxLength) + '...';
+  }
+  return fileName;
+};
+
 // Helper function to group items by date
 const groupByDate = (items, dateKey) => {
   return items.reduce((groups, item) => {
@@ -432,7 +439,13 @@ const AccountBalance = () => {
   };
 
   if (loading) {
-    return <></>;
+    return (
+      <MainLayout>
+        <Center height="100%" bg="white">
+          <Spinner size="xl" color="Gray"/>
+        </Center>
+      </MainLayout>
+    );
   }
 
   if (error) {
@@ -718,8 +731,12 @@ const PrintItem = ({ data }) => (
     <Flex justifyContent="space-between" alignItems="center" fontFamily="VT323" fontSize="26px" lineHeight="1.2">
       <Flex alignItems="center">
         {getFileIcon(data.fileType)}
-        <Text color="#030391" ml={2}>
-          {data.fileName}
+        <Text 
+          color="#030391" ml={2} 
+          whiteSpace="nowrap"
+          overflow="hidden"
+          textOverflow="ellipsis">
+          {truncateFileName(data.fileName, 20)}
         </Text>
       </Flex>
       <Text color="#030391">
