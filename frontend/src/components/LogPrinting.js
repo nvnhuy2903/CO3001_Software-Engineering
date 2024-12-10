@@ -311,10 +311,11 @@ const LogPrinting = () => {
                     textAlign: 'center',
                     padding: '20px',
                     color: 'red',
-                    fontSize: '32px',
+                    fontSize: '22px',
+                    fontWeight: 'lighter',
                   }}
                 >
-                  No files found
+                  Không tìm thấy file phù hợp
                 </td>
               </tr>
             ) : (

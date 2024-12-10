@@ -1,0 +1,160 @@
+.formInput {
+  margin: auto;
+  width: 90%;
+  font-family: 'VT323';
+  font-size: 22px;
+}
+
+.inputPrinter,
+.inputFile {
+  color: #030391;
+  input {
+    background-color: #fff;
+    color: #757575;
+    padding: 8px;
+    border-radius: 12px;
+    width: 90%;
+    font-size: 18px;
+  }
+}
+
+.inputPrinter button {
+  background-color: #1488d8;
+  color: #fff;
+  padding: 12px;
+  border-radius: 100px;
+}
+
+.configuration {
+  margin-top: 20px;
+  color: #030391;
+  background-color: #fff;
+  padding: 12px;
+  border-radius: 32px;
+  input {
+    background-color: #fff;
+    color: #757575;
+    padding: 8px;
+    border-radius: 12px;
+    width: 90%;
+    font-size: 18px;
+  }
+
+  fieldset {
+    border: 2px solid #030391;
+    font-size: 18px;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 12px;
+    legend {
+      margin-left: 20px;
+      background-color: #030391;
+      color: #fff;
+      padding: 0 4px;
+    }
+    label {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      height: 50%;
+      margin-left: 14px;
+    }
+
+    select {
+      background-color: rgba(20, 136, 216, 0.25);
+      min-width: 100px;
+      margin-left: 12px;
+      border: 1px solid #030391;
+      border-radius: 32px;
+      text-align: center;
+    }
+
+    input.inputNumber {
+      padding: 0;
+      margin: 0;
+      text-align: center;
+      margin-left: 12px;
+      background-color: '#fff';
+      border: 1px solid #030391;
+    }
+
+    input.inputNumber:disabled {
+      background-color: rgb(193, 193, 193);
+      cursor: not-allowed;
+    }
+  }
+
+  fieldset.selectPages {
+    margin-left: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    label {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      width: 100%;
+      input {
+        width: fit-content;
+        margin-right: 12px;
+      }
+      select {
+        margin-left: 18px;
+      }
+    }
+  }
+
+  fieldset.pageSetup label {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between !important;
+    align-items: center;
+    padding-right: 20px !important;
+  }
+}
+
+.actions {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  button {
+    border: 1px solid #030391;
+    border-radius: 32px;
+    padding: 0 12px;
+  }
+}
+
+.submitPreview {
+  display: flex;
+  flex-direction: column;
+  div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  /* input:disabled {
+    background-color: rgb(193, 193, 193);
+    cursor: not-allowed;
+  }
+  button:disabled {
+    background-color: rgb(193, 193, 193);
+    cursor: not-allowed;
+  } */
+}
+
+.leftSection button:hover {
+  background-color: #030391;
+}
+
+.rightSection button:hover {
+  background-color: #030391 !important;
+}
