@@ -43,7 +43,7 @@ const Header = () => {
         justifyContent="space-between"
       >
         <HStack>
-          <Link to="/homepage" className="nav-item">
+          <Link to="/" className="nav-item">
             <Heading fontSize="20px" fontFamily="Coiny">
               HCMUT-SSPS
             </Heading>
@@ -52,7 +52,7 @@ const Header = () => {
         <HStack gap="16">
           <nav>
             <HStack gap="8" fontSize="20px">
-              <Link to="/homepage" className="nav-item hover-navbar">
+              <Link to="/" className="nav-item hover-navbar">
                 Trang Chủ
               </Link>
               <Link to="/aboutUs" className="nav-item hover-navbar">
