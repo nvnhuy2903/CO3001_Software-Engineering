@@ -19,3 +19,13 @@
 | docs      | Documents of the project                  |
 | frontend  | The frontend of the project using React   |
 | backend   | The backend of the project using Java     |
+
+## Technology
+
+<code><img height="40" src="image/nodejsStackedDark.png"></code>
+<code><img height="40" src="image/react.png"></code>
+<code><img height="40" src="image/chakraUIpng.png"></code>
+<code><img height="40" src="image/Tailwind CSS.png"></code>
+<code><img height="40" src="image/mysql.png"></code>
+<code><img height="40" src="image/spring_boot.png"></code>
+<code><img height="40" src="image/postman-icon.png"></code>
